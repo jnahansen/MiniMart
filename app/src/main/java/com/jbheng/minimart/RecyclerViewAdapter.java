@@ -18,8 +18,6 @@ import java.util.Vector;
  * or the {@link }.</p>
  */
 class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    // A menu item view type.
-    private static final int MENU_ITEM_VIEW_TYPE = 0;       // todo: probably redundant
 
     // An Activity's Context.
     private final Context mContext;
@@ -61,14 +59,6 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     /**
-     * Determines the view type for the given position.
-     */
-    @Override
-    public int getItemViewType(int position) {
-        return MENU_ITEM_VIEW_TYPE;
-    }
-
-    /**
      * Creates a new view for a menu item view or a Native Express ad view
      * based on the viewType. This method is invoked by the layout manager.
      */
@@ -85,7 +75,6 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
      */
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-//        int viewType = getItemViewType(position);
 
         final ItemViewHolder productItemHolder = (ItemViewHolder) holder;
         final Product productItem = (Product) mRecyclerViewItems.get(position);
