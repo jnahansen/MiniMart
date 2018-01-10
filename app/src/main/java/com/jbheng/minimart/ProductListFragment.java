@@ -34,7 +34,16 @@ public class ProductListFragment extends Fragment {
     private Vector<Object> mProducts = new Vector<>();
 
     private AdapterInterface mAdapterIntf;
+    private LinearLayoutManager mLayoutManager;
 
+    // State for scroll to end detection
+    // I know this is ugly...
+    private int previousTotal = 0;
+    private int visibleItemCount = 0;
+    private int totalItemCount = 0;
+    private int firstVisibleItem = 0;
+    private boolean loading = true;
+    private int visibleThreshold = 5;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,8 +65,8 @@ public class ProductListFragment extends Fragment {
         mRecyclerView.setHasFixedSize(true);
 
         // Specify a linear layout manager.
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
-        mRecyclerView.setLayoutManager(layoutManager);
+        mLayoutManager = new LinearLayoutManager(getContext());
+        mRecyclerView.setLayoutManager(mLayoutManager);
 //        mRecyclerView.scrollToPosition(0);        // todo: option - goto arg position
 
         // Update the RecyclerView item's list with menu items and Native Express ads.
@@ -67,6 +76,36 @@ public class ProductListFragment extends Fragment {
         // Create adapter on Activity lifecycle and set into RecyclerView
         mAdapterIntf.setAdapter(new RecyclerViewAdapter(getContext(), mProducts));
         mRecyclerView.setAdapter(mAdapterIntf.getAdapter());
+
+
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                visibleItemCount = mRecyclerView.getChildCount();
+                totalItemCount = mLayoutManager.getItemCount();
+                firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
+
+                if (loading) {
+                    if (totalItemCount > previousTotal) {
+                        loading = false;
+                        previousTotal = totalItemCount;
+                    }
+                }
+                if (!loading && (totalItemCount - visibleItemCount)
+                        <= (firstVisibleItem + visibleThreshold)) {
+                    // End has been reached
+
+                    Log.i(TAG, "YAYYYYY! end called");
+
+                    // todo: Fetch more data here and then set loading back to true
+
+                    loading = true;
+                }
+            }
+        });
 
         return rootView;
     }
