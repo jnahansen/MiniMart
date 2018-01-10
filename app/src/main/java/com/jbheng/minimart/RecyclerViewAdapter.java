@@ -111,4 +111,15 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         });
     }
 
+    public void appendItems(Vector<Product> items) {
+        mRecyclerViewItems.addAll(items);
+        notifyItemRangeInserted(getItemCount(), items.size());
+    }
+
+
+    public void clear() {
+        mRecyclerViewItems.clear();
+        notifyDataSetChanged();
+    }
+
 }
