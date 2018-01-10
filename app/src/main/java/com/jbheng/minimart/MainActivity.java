@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,16 +26,20 @@ import java.util.Vector;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final String TAG = MainActivity.class.getName();
+
     // The RecyclerView that holds and displays Native Express ads and menu items.
     private RecyclerView mRecyclerView;
 
     // List of Native Express ads and MenuItems that populate the RecyclerView.
-    private Vector<Object> mRecyclerViewItems = new Vector<>();
+    private Vector<Object> mProducts = new Vector<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if(hasNoNetwork()) return;
 
         mRecyclerView = findViewById(R.id.recycler_view);
 
@@ -51,8 +56,25 @@ public class MainActivity extends AppCompatActivity {
         // todo: add initial products to list
 
         // Specify an adapter.
-        RecyclerView.Adapter adapter = new RecyclerViewAdapter(this, mRecyclerViewItems);
+        RecyclerView.Adapter adapter = new RecyclerViewAdapter(this, mProducts);
         mRecyclerView.setAdapter(adapter);
+    }
+
+    private boolean hasNoNetwork() {
+        if(! Utils.isNetworkConnected(this)) {
+            Toast.makeText(this,getString(R.string.no_network),Toast.LENGTH_LONG).show();
+            finish();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.i(TAG,"onResume");
+        // Check network
+        hasNoNetwork();
     }
 
     /**
@@ -62,9 +84,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Loop through the items array and place a new Native Express ad in every ith position in
         // the items List.
-        for (int i = 0; i <= mRecyclerViewItems.size(); i += ITEMS_PER_AD) {
+        for (int i = 0; i <= mProducts.size(); i += ITEMS_PER_AD) {
             final NativeExpressAdView adView = new NativeExpressAdView(MainActivity.this);
-            mRecyclerViewItems.add(i, adView);
+            mProducts.add(i, adView);
         }
     }*/
 
@@ -80,9 +102,9 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 final float scale = MainActivity.this.getResources().getDisplayMetrics().density;
                 // Set the ad size and ad unit ID for each Native Express ad in the items list.
-                for (int i = 0; i <= mRecyclerViewItems.size(); i += ITEMS_PER_AD) {
+                for (int i = 0; i <= mProducts.size(); i += ITEMS_PER_AD) {
                     final NativeExpressAdView adView =
-                            (NativeExpressAdView) mRecyclerViewItems.get(i);
+                            (NativeExpressAdView) mProducts.get(i);
                     final CardView cardView = findViewById(R.id.ad_card_view);
                     final int adWidth = cardView.getWidth() - cardView.getPaddingLeft()
                             - cardView.getPaddingRight();
@@ -102,11 +124,11 @@ public class MainActivity extends AppCompatActivity {
      */
     /*private void loadNativeExpressAd(final int index) {
 
-        if (index >= mRecyclerViewItems.size()) {
+        if (index >= mProducts.size()) {
             return;
         }
 
-        Object item = mRecyclerViewItems.get(index);
+        Object item = mProducts.get(index);
         if (!(item instanceof NativeExpressAdView)) {
             throw new ClassCastException("Expected item at index " + index + " to be a Native"
                     + " Express ad.");
@@ -159,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
 
                 Product menuItem = new Product(menuItemName, menuItemDescription, menuItemPrice,
                         menuItemCategory, menuItemImageName);
-                mRecyclerViewItems.add(menuItem);
+                mProducts.add(menuItem);
             }
         } catch (IOException | JSONException exception) {
             Log.e(MainActivity.class.getName(), "Unable to parse JSON file.", exception);
