@@ -32,7 +32,8 @@ public class ProductListFragment extends Fragment {
 
     // List of Products that populate RecyclerView.
     private Vector<Object> mProducts = new Vector<>();
-    private RecyclerViewAdapter mAdapter;       // todo: should this be in the activity? out of Fragment lifeCycle
+
+    private AdapterInterface mAdapterIntf;
 
 
     @Override
@@ -63,9 +64,9 @@ public class ProductListFragment extends Fragment {
         addMenuItemsFromJson();
         // todo: add initial products to list
 
-        // Specify an adapter.
-        mAdapter = new RecyclerViewAdapter(getContext(), mProducts);
-        mRecyclerView.setAdapter(mAdapter);
+        // Create adapter on Activity lifecycle and set into RecyclerView
+        mAdapterIntf.setAdapter(new RecyclerViewAdapter(getContext(), mProducts));
+        mRecyclerView.setAdapter(mAdapterIntf.getAdapter());
 
         return rootView;
     }
@@ -82,18 +83,17 @@ public class ProductListFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            // todo:
+            mAdapterIntf = (AdapterInterface) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement <interface>");
+                    + " must implement AdapterInterface");
         }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        // todo: should adapter be on Activity so it isn't cleared when this fragment goes away?
-        if(mAdapter != null) mAdapter.clear();
+        mAdapterIntf = null;
     }
 
     /**
