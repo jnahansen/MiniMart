@@ -11,15 +11,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.jbheng.minimart.json.Product;
+import com.jbheng.minimart.json.ProductsQuery;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Vector;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+import retrofit2.Call;
 
 /**
  * Product List Fragment/View
@@ -31,7 +31,8 @@ public class ProductListFragment extends Fragment {
     protected RecyclerView mRecyclerView;
 
     // List of Products that populate RecyclerView.
-    private Vector<Object> mProducts = new Vector<>();
+    private Vector<Product> mNewProducts = new Vector<>();
+    private int mPage;
 
     private AdapterInterface mAdapterIntf;
     private LinearLayoutManager mLayoutManager;
@@ -49,6 +50,9 @@ public class ProductListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate");
+
+        // todo: add initial products to list
+        fetchMoreProducts(1);
     }
 
     @Override
@@ -70,11 +74,10 @@ public class ProductListFragment extends Fragment {
 //        mRecyclerView.scrollToPosition(0);        // todo: option - goto arg position
 
         // Update the RecyclerView item's list with menu items and Native Express ads.
-        addMenuItemsFromJson();
-        // todo: add initial products to list
+//        addMenuItemsFromJson();
 
         // Create adapter on Activity lifecycle and set into RecyclerView
-        mAdapterIntf.setAdapter(new RecyclerViewAdapter(getContext(), mProducts));
+        mAdapterIntf.setAdapter(new RecyclerViewAdapter(getContext(), mNewProducts));
         mRecyclerView.setAdapter(mAdapterIntf.getAdapter());
 
 
@@ -100,7 +103,7 @@ public class ProductListFragment extends Fragment {
 
                     Log.i(TAG, "YAYYYYY! end called");
 
-                    // todo: Fetch more data here and then set loading back to true
+                    // todo: fetchMoreProducts here and then set loading back to true
 
                     loading = true;
                 }
@@ -115,7 +118,7 @@ public class ProductListFragment extends Fragment {
         super.onStart();
 
         // Initialize dataset on a background thread
-//        new LoadData().execute("");       // todo: remove when done w/ AsyncTask; can call fetchData here
+//        new LoadData().execute("");       // todo: remove when done w/ AsyncTask; can call fetchMoreProducts here
     }
 
     @Override
@@ -135,96 +138,53 @@ public class ProductListFragment extends Fragment {
         mAdapterIntf = null;
     }
 
-    /**
-     * Adds {@link Product}'s from a JSON file.
-     */
-    private void addMenuItemsFromJson() {
+    // Uses Retrofit for networking and react for thread management
+    public void fetchMoreProducts(int page) {
+        Log.i(TAG, "fetchMoreProducts: page: " + String.valueOf(page));
+        mNewProducts.clear();
+
+        // NOTE: no gui treatment here as its usually called by StartupActivity
+        // This should be done on a background thread and syncd up w/ main thread when needed
+        io.reactivex.Observable.just("placeHolder")
+                .subscribeOn(Schedulers.io())
+                .doOnNext((item) -> {
+                    setNewProducts(page);
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(stockUpdate -> {
+                    // Append new page data to Adapter
+                    if(! mNewProducts.isEmpty()) {
+                        mAdapterIntf.getAdapter().appendItems(mNewProducts);
+                        mAdapterIntf.getAdapter().notifyDataSetChanged();
+                    }
+                    // todo: loading = false here????
+                });
+    }
+
+    private void setNewProducts(int page) {
+        Log.i(TAG, "setNewProducts: page: " + String.valueOf(page));
         try {
-            String jsonDataString = readJsonDataFromFile();
-            JSONArray menuItemsJsonArray = new JSONArray(jsonDataString);
-
-            for (int i = 0; i < menuItemsJsonArray.length(); ++i) {
-
-                JSONObject menuItemObject = menuItemsJsonArray.getJSONObject(i);
-
-                String menuItemName = menuItemObject.getString("name");
-                String menuItemDescription = menuItemObject.getString("description");
-                String menuItemPrice = menuItemObject.getString("price");
-                String menuItemCategory = menuItemObject.getString("category");
-                String menuItemImageName = menuItemObject.getString("photo");
-
-                Product menuItem = new Product(menuItemName, menuItemDescription, menuItemPrice,
-                        menuItemCategory, menuItemImageName);
-                mProducts.add(menuItem);
-            }
-        } catch (IOException | JSONException exception) {
-            Log.e(MainActivity.class.getName(), "Unable to parse JSON file.", exception);
+            mNewProducts = getProductsUsingRetrofit(page);
+            if(! mNewProducts.isEmpty()) mPage = page;
+        } catch (Throwable t) {
+            Log.e(TAG, "setNewProducts: exception",t);
         }
     }
 
-    /**
-     * Reads the JSON file and converts the JSON data to a {@link String}.
-     *
-     * @return A {@link String} representation of the JSON data.
-     * @throws IOException if unable to read the JSON file.
-     */
-    private String readJsonDataFromFile() throws IOException {
-
-        InputStream inputStream = null;
-        StringBuilder builder = new StringBuilder();
-
+    public Vector<Product> getProductsUsingRetrofit(int page) {
+        Log.i(TAG, "getProductsUsingRetrofit: page: " + String.valueOf(page));
+        // Create interface call
+        ProductsInterface productsInterface = new ProductsInterfaceFactoryForRetrofit().create();
+        // We want a synchronous call here for IO operation
+        Call<ProductsQuery> query = productsInterface.productsQuery(Constants.APIKEY,page,Constants.PAGESIZE);
         try {
-            String jsonDataString = null;
-            inputStream = getResources().openRawResource(R.raw.menu_items_json);
-            BufferedReader bufferedReader = new BufferedReader(
-                    new InputStreamReader(inputStream, "UTF-8"));
-            while ((jsonDataString = bufferedReader.readLine()) != null) {
-                builder.append(jsonDataString);
-            }
-        } finally {
-            if (inputStream != null) {
-                inputStream.close();
-            }
+            ProductsQuery pq = query.execute().body();
+            return pq.getProducts();
+        } catch (Throwable t) {
+            Log.e(TAG,"getProductsUsingRetrofit: exception: ",t);
         }
-
-        return new String(builder);
+        return null;
     }
 
 
-    // AsyncTask for fetching data from Network
-    // todo: NOTE: rotation is not handled correctly as the inner class
-    // has a reference to the Activity (destroyed during rotation). We
-    // should have used task.cancel in onDestroy and tested etc.
-    // The Adapter would not be correct. I think we fixed orientation here.
-   /* private class LoadData extends AsyncTask<String, Void, String> {
-        @Override
-        protected String doInBackground(String... params) {
-            Log.i(TAG, "doInBackground");
-
-            String jsonData = Utils.getDataFromUrl(EARTHQUAKES_DATA_URL);
-            Log.i(TAG, "doInBackground: result: " + jsonData);
-
-            // parse array of json and build mDataSet
-            mDataset = Earthquake.parseEarthquakes(jsonData);
-
-            // todo: could add different sorting here e.g.nsort on magnitude vs. date here; data is already sorted
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            // set data into RecyclerView and refresh; check if view is created first
-            mAdapter.setData(mDataset);
-            mAdapter.notifyDataSetChanged();
-        }
-
-        @Override
-        protected void onPreExecute() {
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-        }
-    }*/
 }

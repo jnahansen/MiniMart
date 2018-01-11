@@ -1,7 +1,10 @@
 package com.jbheng.minimart;
 
 import android.content.Context;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +12,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.jbheng.minimart.json.Product;
 
 import java.util.Vector;
 
@@ -23,9 +28,9 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private final Context mContext;
 
     // The list of product items.
-    private final Vector<Object> mRecyclerViewItems;
+    private final Vector<Product> mRecyclerViewItems;
 
-    public RecyclerViewAdapter(Context context, Vector<Object> recyclerViewItems) {
+    public RecyclerViewAdapter(Context context, Vector<Product> recyclerViewItems) {
         this.mContext = context;
         this.mRecyclerViewItems = recyclerViewItems;
     }
@@ -36,9 +41,9 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
      */
     public class ItemViewHolder extends RecyclerView.ViewHolder {
         private TextView productItemName;
-        private TextView productItemDescription;
+        private TextView productItemShortDescription;
+        // todo: add long description
         private TextView productItemPrice;
-        private TextView productItemCategory;
         private ImageView productItemImage;
 
         ItemViewHolder(View view) {
@@ -46,9 +51,7 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             productItemImage = view.findViewById(R.id.product_item_image);
             productItemName = view.findViewById(R.id.product_item_name);
             productItemPrice = view.findViewById(R.id.product_item_price);
-            productItemCategory = view.findViewById(R.id.product_item_category);
-            productItemDescription = view.findViewById(R.id.product_item_description);
-
+            productItemShortDescription = view.findViewById(R.id.product_item_short_description);
         }
 
     }
@@ -79,17 +82,23 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         final ItemViewHolder productItemHolder = (ItemViewHolder) holder;
         final Product productItem = (Product) mRecyclerViewItems.get(position);
 
-        // Get product item image resource ID.
-        String imageName = productItem.getImageName();
-        int imageResID = mContext.getResources().getIdentifier(imageName, "drawable",
-                mContext.getPackageName());
+        // Get product item image todo: using Picasso
+        String imageName = productItem.getProductImage();
+//        int imageResID = mContext.getResources().getIdentifier(imageName, "drawable",
+//                mContext.getPackageName());
 
         // Add the menu item details to the menu item view.
-        productItemHolder.productItemImage.setImageResource(imageResID);       // todo: use Picasso here
-        productItemHolder.productItemName.setText(productItem.getName());
+//        productItemHolder.productItemImage.setImageResource(imageResID);       // todo: use Picasso here
+        productItemHolder.productItemName.setText(productItem.getProductName());
         productItemHolder.productItemPrice.setText(productItem.getPrice());
-        productItemHolder.productItemCategory.setText(productItem.getCategory());
-        productItemHolder.productItemDescription.setText(productItem.getDescription());
+
+        // Set html from short description if we have it
+        if(! TextUtils.isEmpty(productItem.getShortDescription())) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)      // Nougat and above
+                productItemHolder.productItemShortDescription.setText(Html.fromHtml(productItem.getShortDescription(), Html.FROM_HTML_MODE_COMPACT));
+            else
+                productItemHolder.productItemShortDescription.setText(Html.fromHtml(productItem.getShortDescription()));
+        }
 
         // Set click listener on view
         productItemHolder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -97,7 +106,7 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             public void onClick(View v) {
                 try {
                     Log.i("RVAdapter","Clicked on item");
-                    Toast.makeText(mContext, "Clicked on item " + productItem.getName(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "Clicked on item " + productItem.getProductName(), Toast.LENGTH_SHORT).show();
                     // todo: swap list for product fragment here
 //                    TextView tickerTv = (TextView) v.findViewById(R.id.stockId);
 //                    String ticker = tickerTv.getText().toString();
