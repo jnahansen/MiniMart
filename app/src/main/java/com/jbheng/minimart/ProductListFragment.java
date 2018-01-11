@@ -10,9 +10,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jbheng.minimart.json.Product;
+
+import org.w3c.dom.Text;
 
 import java.util.Vector;
 
@@ -25,13 +28,11 @@ public class ProductListFragment extends Fragment implements LoadMoreProductsInt
 
     protected RecyclerView mRecyclerView;
     private RecyclerViewAdapter mAdapter;
-
     private LinearLayoutManager mLayoutManager;
-
     private LoadMoreProductsTask mLoadProductsTask;
-
     // Scroll to end detection
     private EndlessRecyclerViewScrollListener mScrollHitBottomListener;
+    private TextView mLoadingTv;
 
     /**
      * @return A new instance of fragment.
@@ -67,6 +68,7 @@ public class ProductListFragment extends Fragment implements LoadMoreProductsInt
         View rootView = inflater.inflate(R.layout.product_list_layout, container, false);
         rootView.setTag(TAG);
 
+        mLoadingTv = (TextView) rootView.findViewById(R.id.loadingTextId);
         mRecyclerView = rootView.findViewById(R.id.recycler_view);
 
         // Use this setting to improve performance if you know that changes
@@ -159,6 +161,10 @@ public class ProductListFragment extends Fragment implements LoadMoreProductsInt
     @Override
     public void OnLoadProductsFinished(Vector<Product> list) {
         Log.i(TAG, "OnLoadProductsFinished");
+
+        // Clear initial loading text after first load pass
+        if(mLoadingTv != null) mLoadingTv.setVisibility(View.GONE);
+
         if(list == null || list.isEmpty()) {
             Log.e(TAG, "OnLoadProductsFinished: returned list was null or empty");
             clearProductLoadingTask();
@@ -175,6 +181,7 @@ public class ProductListFragment extends Fragment implements LoadMoreProductsInt
             else
                 mAdapter.notifyItemRangeInserted(mAdapter.getItemCount(), list.size());
         }
+
         clearProductLoadingTask();
         // Reset state for scroll to bottom listener
         mScrollHitBottomListener.resetState();
