@@ -37,9 +37,13 @@ public class MainActivity extends AppCompatActivity {
         Utils.hasNetwork(this);
     }
 
+    // Hitting back button clears data for starting over
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        // destroy Products model data
+        Products.getInstance().destroy();
     }
 
 }

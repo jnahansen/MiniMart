@@ -30,14 +30,8 @@ public class ProductListFragment extends Fragment implements LoadMoreProductsInt
 
     private LoadMoreProductsTask mLoadProductsTask;
 
-    // State for scroll to end detection
-    // I know this is ugly...
-    private int previousTotal = 0;
-    private int visibleItemCount = 0;
-    private int totalItemCount = 0;
-    private int firstVisibleItem = 0;
-    private boolean loading = true;
-    private int visibleThreshold = 5;
+    // Scroll to end detection
+    private EndlessRecyclerViewScrollListener mScrollHitBottomListener;
 
     /**
      * @return A new instance of fragment.
@@ -89,35 +83,19 @@ public class ProductListFragment extends Fragment implements LoadMoreProductsInt
         mRecyclerView.setAdapter(mAdapter);
 
         // For handling scroll to bottom loads more products
-        // todo: redo this
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-
+        // Retain an instance so that you can call `resetState()` for fresh searches
+        mScrollHitBottomListener = new EndlessRecyclerViewScrollListener(mLayoutManager) {
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-
-                visibleItemCount = mRecyclerView.getChildCount();
-                totalItemCount = mLayoutManager.getItemCount();
-                firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
-
-                if (loading) {
-                    if (totalItemCount > previousTotal) {
-                        loading = false;
-                        previousTotal = totalItemCount;
-                    }
-                }
-                if (!loading && (totalItemCount - visibleItemCount)
-                        <= (firstVisibleItem + visibleThreshold)) {
-                    // End has been reached
-
-                    Log.i(TAG, "YAYYYYY! end called");
-
-                    // todo: getMoreProducts here and then set loading back to true
-
-                    loading = true;
-                }
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                Log.i(TAG,"onLoadMore: page: " + String.valueOf(page) + " totalItemsCount: " + String.valueOf(totalItemsCount));
+                // Triggered only when new data needs to be appended to the list
+                // Add whatever code is needed to append new items to the bottom of the list
+//                loadNextDataFromApi(page);
+                getMoreProducts();
             }
-        });
+        };
+        // Adds scroll listener to RecyclerView
+        mRecyclerView.addOnScrollListener(mScrollHitBottomListener);
 
         return rootView;
     }
@@ -198,6 +176,8 @@ public class ProductListFragment extends Fragment implements LoadMoreProductsInt
                 mAdapter.notifyItemRangeInserted(mAdapter.getItemCount(), list.size());
         }
         clearProductLoadingTask();
+        // Reset state for scroll to bottom listener
+        mScrollHitBottomListener.resetState();
     }
 
 }

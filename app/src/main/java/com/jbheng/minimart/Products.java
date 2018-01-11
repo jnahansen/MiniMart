@@ -35,10 +35,6 @@ public class Products {
         return products;
     }
 
-    public void clear() {
-        products.clear();
-    }
-
     public void append(Vector<Product> newProducts) {
         Log.i(TAG,"append");
         products.addAll(newProducts);
@@ -49,10 +45,8 @@ public class Products {
         return products.size() / Constants.PAGESIZE + 1;
     }
 
-
-
-
-
-
+    public void destroy() {
+        products.clear();
+    }
 
 }
