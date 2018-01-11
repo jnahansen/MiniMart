@@ -15,8 +15,6 @@ import android.widget.Toast;
 
 import com.jbheng.minimart.json.Product;
 
-import org.w3c.dom.Text;
-
 import java.util.Vector;
 
 /**
@@ -165,26 +163,26 @@ public class ProductListFragment extends Fragment implements LoadMoreProductsInt
         // Clear initial loading text after first load pass
         if(mLoadingTv != null) mLoadingTv.setVisibility(View.GONE);
 
+        // For empty list null our task and return
         if(list == null || list.isEmpty()) {
             Log.e(TAG, "OnLoadProductsFinished: returned list was null or empty");
-            clearProductLoadingTask();
-            return;
-        }
-        // Add products to Products data
-        Products.getInstance().append(list);
-        // Update adapter if there was data
-        if(mAdapter != null && ! mLoadProductsTask.isCancelled()) {
-            // update mAdapter here
-            boolean hadNoProducts = (mAdapter.getItemCount() == 0);
-            if(hadNoProducts)
-                mAdapter.notifyDataSetChanged();
-            else
-                mAdapter.notifyItemRangeInserted(mAdapter.getItemCount(), list.size());
+        } else {
+            // Add products to Products data
+            Products.getInstance().append(list);
+            // Update adapter if there was data
+            if (mAdapter != null && !mLoadProductsTask.isCancelled()) {
+                // update mAdapter here
+                boolean hadNoProducts = (mAdapter.getItemCount() == 0);
+                if (hadNoProducts)
+                    mAdapter.notifyDataSetChanged();
+                else
+                    mAdapter.notifyItemRangeInserted(mAdapter.getItemCount(), list.size());
+            }
         }
 
         clearProductLoadingTask();
         // Reset state for scroll to bottom listener
-        mScrollHitBottomListener.resetState();
+        if(mScrollHitBottomListener != null) mScrollHitBottomListener.resetState();
     }
 
 }
