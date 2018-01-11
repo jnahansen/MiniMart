@@ -68,7 +68,7 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         View menuItemLayoutView = LayoutInflater.from(viewGroup.getContext()).inflate(
-                R.layout.menu_item_container, viewGroup, false);
+                R.layout.product_item_layout, viewGroup, false);
         return new ItemViewHolder(menuItemLayoutView);
     }
 
@@ -82,10 +82,9 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         final ItemViewHolder productItemHolder = (ItemViewHolder) holder;
         final Product productItem = (Product) mRecyclerViewItems.get(position);
 
-        // Get product item image todo: using Picasso
-        String imageName = productItem.getProductImage();
-//        int imageResID = mContext.getResources().getIdentifier(imageName, "drawable",
-//                mContext.getPackageName());
+        // Get product item image url and lazy load using Picasso
+        String imageUrl = productItem.getProductImage();
+        Utils.setIconUsingPicasso(imageUrl,productItemHolder.productItemImage);
 
         // Add the menu item details to the menu item view.
 //        productItemHolder.productItemImage.setImageResource(imageResID);       // todo: use Picasso here
