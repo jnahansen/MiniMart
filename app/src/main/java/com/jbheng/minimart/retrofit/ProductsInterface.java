@@ -1,6 +1,6 @@
-package com.jbheng.minimart;
+package com.jbheng.minimart.retrofit;
 
-import com.jbheng.minimart.json.ProductsQuery;
+import com.jbheng.minimart.model.ProductsQuery;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

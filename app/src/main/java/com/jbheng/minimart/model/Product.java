@@ -1,4 +1,4 @@
-package com.jbheng.minimart.json;
+package com.jbheng.minimart.model;
 
 /**
  * The {@link Product} class.

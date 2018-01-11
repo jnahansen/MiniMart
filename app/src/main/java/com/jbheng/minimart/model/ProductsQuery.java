@@ -1,4 +1,4 @@
-package com.jbheng.minimart.json;
+package com.jbheng.minimart.model;
 
 import java.util.Vector;
 

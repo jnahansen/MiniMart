@@ -1,4 +1,7 @@
-package com.jbheng.minimart;
+package com.jbheng.minimart.retrofit;
+
+import com.jbheng.minimart.Constants;
+import com.jbheng.minimart.retrofit.ProductsInterface;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
