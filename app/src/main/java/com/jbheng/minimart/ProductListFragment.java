@@ -11,8 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.jbheng.minimart.model.Product;
-import com.jbheng.minimart.model.ProductsQuery;
+import com.jbheng.minimart.json.Product;
+import com.jbheng.minimart.json.ProductsQuery;
 import com.jbheng.minimart.retrofit.ProductsInterface;
 import com.jbheng.minimart.retrofit.ProductsInterfaceFactoryForRetrofit;
 

@@ -13,7 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.jbheng.minimart.model.Product;
+import com.jbheng.minimart.json.Product;
 
 import java.util.Vector;
 
