@@ -19,14 +19,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i(TAG,"onCreate");
         setContentView(R.layout.activity_main);
 
         if(hasNoNetwork()) return;
 
 //        if (savedInstanceState == null) {     // todo: why needed?
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            ProductListFragment fragment = new ProductListFragment();
-            transaction.replace(R.id.sample_content_fragment, fragment);
+            transaction.replace(R.id.sample_content_fragment, ProductListFragment.newInstance());
             transaction.commit();
 //        }
 

@@ -38,6 +38,24 @@ public class ProductListFragment extends Fragment implements LoadMoreProductsInt
     private boolean loading = true;
     private int visibleThreshold = 5;
 
+    /**
+     * @return A new instance of fragment.
+     */
+    public static ProductListFragment newInstance() {
+        ProductListFragment fragment = new ProductListFragment();
+//        Bundle args = new Bundle();
+//        fragment.setArguments(args);
+
+        // Don't create a new fragment when Activity is re-created e.g. during rotation
+        fragment.setRetainInstance(true);
+
+        return fragment;
+    }
+
+    public ProductListFragment() {
+        // Required empty public constructor
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
