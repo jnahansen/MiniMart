@@ -9,6 +9,10 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
  * Created by jhansen on 1/11/18.
  *
  * Borrowed from: https://gist.github.com/nesquena/d09dc68ff07e845cc622
+ *
+ * Use of this class is described here:
+ * https://guides.codepath.com/android/Endless-Scrolling-with-AdapterViews-and-RecyclerView
+ *
  */
 
 public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnScrollListener {
