@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">MiniMart</string>
 
-    <string name="no_network">Check network connectivity</string>
+    <string name="no_network">Check network connectivity!</string>
 
 </resources>

@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.Toast;
 
 /*
     MiniMart Exercise
@@ -22,8 +21,6 @@ public class MainActivity extends AppCompatActivity {
         Log.i(TAG,"onCreate");
         setContentView(R.layout.activity_main);
 
-        if(hasNoNetwork()) return;
-
 //        if (savedInstanceState == null) {     // todo: why needed?
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.sample_content_fragment, ProductListFragment.newInstance());
@@ -32,21 +29,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private boolean hasNoNetwork() {
-        if(! Utils.isNetworkConnected(this)) {
-            Toast.makeText(this,getString(R.string.no_network),Toast.LENGTH_LONG).show();
-            finish();
-            return true;
-        }
-        return false;
-    }
-
     @Override
     public void onResume() {
         super.onResume();
         Log.i(TAG,"onResume");
-        // Check network
-        hasNoNetwork();
+        // Check network connectivity
+        Utils.hasNetwork(this);
     }
 
     @Override

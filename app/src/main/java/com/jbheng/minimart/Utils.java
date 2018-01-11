@@ -6,6 +6,7 @@ import android.net.NetworkInfo;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.jbheng.minimart.picasso.PicassoTrustAllSSL;
 import com.squareup.picasso.Picasso;
@@ -35,6 +36,15 @@ public class Utils {
         Log.i(TAG, "isNetworkConnected: result: " + String.valueOf(result));
         return result;
     }
+
+    public static boolean hasNetwork(Context c) {
+        if(! Utils.isNetworkConnected(c)) {
+            Toast.makeText(c, c.getString(R.string.no_network), Toast.LENGTH_LONG).show();
+            return false;
+        }
+        return true;
+    }
+
 
     // For Picasso image rendering
     public static void setIconUsingPicasso(String iconUrl, ImageView iv) {

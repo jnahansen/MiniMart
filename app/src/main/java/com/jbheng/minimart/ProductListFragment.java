@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.jbheng.minimart.json.Product;
 
@@ -165,6 +166,12 @@ public class ProductListFragment extends Fragment implements LoadMoreProductsInt
     // Uses Retrofit for networking and react for thread management
     public void getMoreProducts() {
         Log.i(TAG, "getMoreProducts");
+
+        // Check network
+        if(! Utils.hasNetwork(getActivity())) {
+            Toast.makeText(getContext(),getString(R.string.no_network),Toast.LENGTH_LONG).show();
+            return;
+        }
 
         // Start a task (if one is not already running)
         if(setProductLoadingTask())
