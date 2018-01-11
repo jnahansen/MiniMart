@@ -32,9 +32,9 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:26.1.0'
 //    compile 'com.google.android.gms:play-services-ads:11.8.0'
 
-    // Reactive Libs
-    compile group: 'io.reactivex.rxjava2', name: 'rxjava', version: '2.0.3'
-    compile group: 'io.reactivex.rxjava2', name: 'rxandroid', version: '2.0.1'
+    // Reactive Libs - no longer used
+//    compile group: 'io.reactivex.rxjava2', name: 'rxjava', version: '2.0.3'
+//    compile group: 'io.reactivex.rxjava2', name: 'rxandroid', version: '2.0.1'
 
     // More Reactive stuff
     compile 'com.jakewharton.rxbinding2:rxbinding:2.0.0'

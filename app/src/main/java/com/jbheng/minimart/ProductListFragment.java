@@ -12,31 +12,22 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.jbheng.minimart.json.Product;
-import com.jbheng.minimart.json.ProductsQuery;
-import com.jbheng.minimart.retrofit.ProductsInterface;
-import com.jbheng.minimart.retrofit.ProductsInterfaceFactoryForRetrofit;
 
 import java.util.Vector;
-
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
-import retrofit2.Call;
 
 /**
  * Product List Fragment/View
  */
-public class ProductListFragment extends Fragment {
+public class ProductListFragment extends Fragment implements LoadMoreProductsInterface {
 
     private static final String TAG = ProductListFragment.class.getName();
 
     protected RecyclerView mRecyclerView;
+    private RecyclerViewAdapter mAdapter;
 
-    // List of Products that populate RecyclerView.
-    private Vector<Product> mNewProducts = new Vector<>();
-    private int mPage;
-
-    private AdapterInterface mAdapterIntf;
     private LinearLayoutManager mLayoutManager;
+
+    private LoadMoreProductsTask mLoadProductsTask;
 
     // State for scroll to end detection
     // I know this is ugly...
@@ -52,8 +43,8 @@ public class ProductListFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate");
 
-        // todo: add initial products to list
-        fetchMoreProducts(1);
+        // Get some products to show
+        getMoreProducts();
     }
 
     @Override
@@ -74,14 +65,12 @@ public class ProductListFragment extends Fragment {
         mRecyclerView.setLayoutManager(mLayoutManager);
 //        mRecyclerView.scrollToPosition(0);        // todo: option - goto arg position
 
-        // Update the RecyclerView item's list with menu items and Native Express ads.
-//        addMenuItemsFromJson();
-
         // Create adapter on Activity lifecycle and set into RecyclerView
-        mAdapterIntf.setAdapter(new RecyclerViewAdapter(getContext(), mNewProducts));
-        mRecyclerView.setAdapter(mAdapterIntf.getAdapter());
+        mAdapter = new RecyclerViewAdapter(getContext());
+        mRecyclerView.setAdapter(mAdapter);
 
-
+        // For handling scroll to bottom loads more products
+        // todo: redo this
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
             @Override
@@ -104,7 +93,7 @@ public class ProductListFragment extends Fragment {
 
                     Log.i(TAG, "YAYYYYY! end called");
 
-                    // todo: fetchMoreProducts here and then set loading back to true
+                    // todo: getMoreProducts here and then set loading back to true
 
                     loading = true;
                 }
@@ -117,16 +106,13 @@ public class ProductListFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-
-        // Initialize dataset on a background thread
-//        new LoadData().execute("");       // todo: remove when done w/ AsyncTask; can call fetchMoreProducts here
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mAdapterIntf = (AdapterInterface) activity;
+
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement AdapterInterface");
@@ -136,56 +122,57 @@ public class ProductListFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mAdapterIntf = null;
+        if(mLoadProductsTask != null) {
+            mLoadProductsTask.cancel(false);    // let thread finish
+            mAdapter = null;
+        }
+    }
+
+    // Get an AsyncTask for loading products, if no task is already running.
+    // Only one task should run at a time
+    private boolean setProductLoadingTask() {
+        if (mLoadProductsTask == null) {
+            mLoadProductsTask = new LoadMoreProductsTask(this);
+            return true;
+        }
+        Log.e(TAG,"setProductLoadingTask: not allowed, a task is already running");
+        return false;
+    }
+
+    private void clearProductLoadingTask() {
+        Log.i(TAG,"clearProductLoadingTask");
+        mLoadProductsTask = null;
     }
 
     // Uses Retrofit for networking and react for thread management
-    public void fetchMoreProducts(int page) {
-        Log.i(TAG, "fetchMoreProducts: page: " + String.valueOf(page));
-        mNewProducts.clear();
+    public void getMoreProducts() {
+        Log.i(TAG, "getMoreProducts");
 
-        // NOTE: no gui treatment here as its usually called by StartupActivity
-        // This should be done on a background thread and syncd up w/ main thread when needed
-        io.reactivex.Observable.just("placeHolder")
-                .subscribeOn(Schedulers.io())
-                .doOnNext((item) -> {
-                    setNewProducts(page);
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(stockUpdate -> {
-                    // Append new page data to Adapter
-                    if(! mNewProducts.isEmpty()) {
-                        mAdapterIntf.getAdapter().appendItems(mNewProducts);
-                        mAdapterIntf.getAdapter().notifyDataSetChanged();
-                    }
-                    // todo: loading = false here????
-                });
+        // Start a task (if one is not already running)
+        if(setProductLoadingTask())
+            mLoadProductsTask.execute();
     }
 
-    private void setNewProducts(int page) {
-        Log.i(TAG, "setNewProducts: page: " + String.valueOf(page));
-        try {
-            mNewProducts = getProductsUsingRetrofit(page);
-            if(! mNewProducts.isEmpty()) mPage = page;
-        } catch (Throwable t) {
-            Log.e(TAG, "setNewProducts: exception",t);
+    @Override
+    public void OnLoadProductsFinished(Vector<Product> list) {
+        Log.i(TAG, "OnLoadProductsFinished");
+        if(list == null || list.isEmpty()) {
+            Log.e(TAG, "OnLoadProductsFinished: returned list was null or empty");
+            clearProductLoadingTask();
+            return;
         }
-    }
-
-    public Vector<Product> getProductsUsingRetrofit(int page) {
-        Log.i(TAG, "getProductsUsingRetrofit: page: " + String.valueOf(page));
-        // Create interface call
-        ProductsInterface productsInterface = new ProductsInterfaceFactoryForRetrofit().create();
-        // We want a synchronous call here for IO operation
-        Call<ProductsQuery> query = productsInterface.productsQuery(Constants.APIKEY,page,Constants.PAGESIZE);
-        try {
-            ProductsQuery pq = query.execute().body();
-            return pq.getProducts();
-        } catch (Throwable t) {
-            Log.e(TAG,"getProductsUsingRetrofit: exception: ",t);
+        // Add products to Products data
+        Products.getInstance().append(list);
+        // Update adapter if there was data
+        if(mAdapter != null && ! mLoadProductsTask.isCancelled()) {
+            // update mAdapter here
+            boolean hadNoProducts = (mAdapter.getItemCount() == 0);
+            if(hadNoProducts)
+                mAdapter.notifyDataSetChanged();
+            else
+                mAdapter.notifyItemRangeInserted(mAdapter.getItemCount(), list.size());
         }
-        return null;
+        clearProductLoadingTask();
     }
-
 
 }

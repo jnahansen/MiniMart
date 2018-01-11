@@ -15,8 +15,6 @@ import android.widget.Toast;
 
 import com.jbheng.minimart.json.Product;
 
-import java.util.Vector;
-
 /**
  * The {@link RecyclerViewAdapter} class.
  * <p>The adapter provides access to the items in the {@link ItemViewHolder}
@@ -27,12 +25,8 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     // An Activity's Context.
     private final Context mContext;
 
-    // The list of product items.
-    private final Vector<Product> mRecyclerViewItems;
-
-    public RecyclerViewAdapter(Context context, Vector<Product> recyclerViewItems) {
+    public RecyclerViewAdapter(Context context) {
         this.mContext = context;
-        this.mRecyclerViewItems = recyclerViewItems;
     }
 
     /**
@@ -58,7 +52,7 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public int getItemCount() {
-        return mRecyclerViewItems.size();
+        return Products.getInstance().getProducts().size();
     }
 
     /**
@@ -80,7 +74,7 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
         final ItemViewHolder productItemHolder = (ItemViewHolder) holder;
-        final Product productItem = (Product) mRecyclerViewItems.get(position);
+        final Product productItem = Products.getInstance().getProducts().get(position);
 
         // Get product item image url and lazy load using Picasso
         String imageUrl = productItem.getProductImage();
@@ -106,7 +100,7 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 try {
                     Log.i("RVAdapter","Clicked on item");
                     Toast.makeText(mContext, "Clicked on item " + productItem.getProductName(), Toast.LENGTH_SHORT).show();
-                    // todo: swap list for product fragment here
+                    // todo: swap list for product detail fragment here
 //                    TextView tickerTv = (TextView) v.findViewById(R.id.stockId);
 //                    String ticker = tickerTv.getText().toString();
 //                    FragmentUtils.addFragment(mFragmentManager,
@@ -117,17 +111,6 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 }
             }
         });
-    }
-
-    public void appendItems(Vector<Product> items) {
-        mRecyclerViewItems.addAll(items);
-        notifyItemRangeInserted(getItemCount(), items.size());
-    }
-
-
-    public void clear() {
-        mRecyclerViewItems.clear();
-        notifyDataSetChanged();
     }
 
 }

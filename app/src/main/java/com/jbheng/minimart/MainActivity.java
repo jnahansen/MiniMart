@@ -12,12 +12,9 @@ import android.widget.Toast;
 
 */
 
-public class MainActivity extends AppCompatActivity implements AdapterInterface {
+public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = MainActivity.class.getName();
-
-    // Adapter tied to lifecycle of Activity
-    private RecyclerViewAdapter mAdapter;       // todo: should this be in the activity? out of Fragment lifeCycle
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,20 +52,6 @@ public class MainActivity extends AppCompatActivity implements AdapterInterface 
     @Override
     public void onStop() {
         super.onStop();
-        if(mAdapter != null) {
-            mAdapter.clear();
-            mAdapter = null;
-        }
-    }
-
-    @Override
-    public RecyclerViewAdapter getAdapter() {
-        return mAdapter;
-    }
-
-    @Override
-    public void setAdapter(RecyclerViewAdapter adapter) {
-        mAdapter = adapter;
     }
 
 }

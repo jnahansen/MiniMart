@@ -1,7 +1,6 @@
 package com.jbheng.minimart.retrofit;
 
 import com.jbheng.minimart.Constants;
-import com.jbheng.minimart.retrofit.ProductsInterface;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -25,7 +24,7 @@ public class ProductsInterfaceFactoryForRetrofit {
     Retrofit retrofit = new Retrofit.Builder()
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl(Constants.WALMART_BASE_URL)
+            .baseUrl(Constants.WALMART_PRODUCT_API_BASE_URL)
             .build();
 
     public ProductsInterface create() {
