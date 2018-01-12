@@ -67,6 +67,9 @@ public class ProductListFragment extends Fragment implements LoadMoreProductsInt
         rootView.setTag(TAG);
 
         mLoadingTv = (TextView) rootView.findViewById(R.id.loadingTextId);
+        // If we have any products, clear loading task upfront
+        if(Products.getInstance().haveProducts()) clearLoadingText();
+
         mRecyclerView = rootView.findViewById(R.id.recycler_view);
 
         // Use this setting to improve performance if you know that changes
@@ -156,12 +159,13 @@ public class ProductListFragment extends Fragment implements LoadMoreProductsInt
             mLoadProductsTask.execute();
     }
 
+    // This gets called on the main thread
     @Override
     public void OnLoadProductsFinished(Vector<Product> list) {
         Log.i(TAG, "OnLoadProductsFinished");
 
         // Clear initial loading text after first load pass
-        if(mLoadingTv != null) mLoadingTv.setVisibility(View.GONE);
+        clearLoadingText();
 
         // For empty list null our task and return
         if(list == null || list.isEmpty()) {
@@ -183,6 +187,11 @@ public class ProductListFragment extends Fragment implements LoadMoreProductsInt
         clearProductLoadingTask();
         // Reset state for scroll to bottom listener
         if(mScrollHitBottomListener != null) mScrollHitBottomListener.resetState();
+    }
+
+    private void clearLoadingText() {
+        if(mLoadingTv == null) return;
+        mLoadingTv.setVisibility(View.GONE);
     }
 
 }

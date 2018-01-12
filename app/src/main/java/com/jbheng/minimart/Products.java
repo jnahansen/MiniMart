@@ -35,6 +35,10 @@ public class Products {
         return products;
     }
 
+    public boolean haveProducts() {
+        return products != null && ! products.isEmpty();
+    }
+
     public void append(Vector<Product> newProducts) {
         Log.i(TAG,"append");
         products.addAll(newProducts);
