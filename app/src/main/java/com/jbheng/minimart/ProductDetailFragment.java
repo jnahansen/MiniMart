@@ -177,7 +177,7 @@ public class ProductDetailFragment extends Fragment {
             ProductDetailActivity.startProductDetailActivity(pos);
             // Finish previous product activity
             getActivity().finish();
-            // Animate finished activity off screen
+            // Animate new product onto screen
             if(forward)
                 getActivity().overridePendingTransition(R.anim.to_left,R.anim.nothing);
             else
