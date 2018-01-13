@@ -93,7 +93,7 @@ public class ProductListFragment extends Fragment implements LoadMoreProductsInt
 //        mRecyclerView.scrollToPosition(mRequestedPosition);       // This didn't work
 
         // Create adapter on Activity lifecycle and set into RecyclerView
-        mAdapter = new RecyclerViewAdapter(getFragmentManager());
+        mAdapter = new RecyclerViewAdapter(getActivity().getSupportFragmentManager());      // need to use support fragment mgr here
         mRecyclerView.setAdapter(mAdapter);
 
         // For handling scroll to bottom loads more products

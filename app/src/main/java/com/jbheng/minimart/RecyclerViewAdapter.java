@@ -1,9 +1,7 @@
 package com.jbheng.minimart;
 
 import android.os.Build;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
@@ -22,6 +20,8 @@ import com.jbheng.minimart.json.Product;
  * or the {@link }.</p>
  */
 class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    public static final String TAG = RecyclerViewAdapter.class.getName();
 
     // An Activity's Context.
     private final FragmentManager mFragmentManager;
@@ -98,22 +98,8 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         productItemHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    Log.i("RVAdapter", "Clicked on item " + String.valueOf(productItem.getProductName()));
-                    // Hide List fragment here
-                    Fragment listFragment = mFragmentManager.findFragmentByTag(ProductListFragment.TAG);
-                    mFragmentManager.beginTransaction()
-                            .hide(listFragment)
-                            .commit();
-
-                    // Add product detail fragment here, on BACK stack so we can go back to list fragment using BACK
-                    FragmentTransaction trans = mFragmentManager.beginTransaction();
-                    trans.add(R.id.sample_content_fragment, ProductDetailFragment.newInstance(position));
-                    trans.addToBackStack(ProductDetailFragment.TAG).commit();
-
-                } catch (Exception e) {
-                    Log.e("RVAdapter", "onClick: exception: ", e);
-                }
+                Log.i("RVAdapter", "Clicked on item " + String.valueOf(productItem.getProductName()));
+                ProductDetailFragment.show(mFragmentManager,position);
             }
         });
     }
