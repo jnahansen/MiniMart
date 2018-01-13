@@ -147,13 +147,13 @@ public class ProductDetailFragment extends Fragment {
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                Log.e(TAG, "SWIPE R TO L");
-                moveToProduct(mPosition+1);
-                return true; // Right to left
+                //Log.i(TAG, "SWIPE R TO L");
+                moveToProduct(mPosition+1,true);
+                return true;
             } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                Log.e(TAG, "SWIPE L TO R");
-                moveToProduct(mPosition-1);
-                return true; // Left to right
+                //Log.i(TAG, "SWIPE L TO R");
+                moveToProduct(mPosition-1,false);
+                return true;
             }
 
             // below unused
@@ -166,16 +166,23 @@ public class ProductDetailFragment extends Fragment {
         }
     }
 
-    private void moveToProduct(int pos) {
+    private void moveToProduct(int pos,boolean forward) {
         try {
             // Check position
             if(pos < 0 || pos >= Products.getInstance().size()) {
                 Log.i(TAG,"moveToProduct: index out of range, leaving");
                 return;
             }
-
+            // Start new activity
             ProductDetailActivity.startProductDetailActivity(pos);
+            // Finish previous product activity
             getActivity().finish();
+            // Animate finished activity off screen
+            if(forward)
+                getActivity().overridePendingTransition(R.anim.to_left,R.anim.nothing);
+            else
+                getActivity().overridePendingTransition(R.anim.to_right,R.anim.nothing);
+
         } catch (Exception e) {
             Log.e(TAG,"moveToProduct: exception ",e);
         }
