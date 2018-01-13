@@ -10,7 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.jbheng.minimart.json.Product;
@@ -30,7 +30,7 @@ public class ProductListFragment extends Fragment implements LoadMoreProductsInt
     private LoadMoreProductsTask mLoadProductsTask;
     // Scroll to end detection
     private EndlessRecyclerViewScrollListener mScrollHitBottomListener;
-    private TextView mLoadingTv;
+    private ProgressBar mLoadingSpinny;
     private int mRequestedPosition;
 
     /**
@@ -75,8 +75,8 @@ public class ProductListFragment extends Fragment implements LoadMoreProductsInt
         View rootView = inflater.inflate(R.layout.product_list_layout, container, false);
         rootView.setTag(TAG);
 
-        mLoadingTv = (TextView) rootView.findViewById(R.id.loadingTextId);
-        // If we have any products, clear loading task upfront
+        mLoadingSpinny = (ProgressBar) rootView.findViewById(R.id.loadingSpinnyId);
+        // If we have any products, clear loading spinny upfront
         if(Products.getInstance().haveProducts()) clearLoadingText();
 
         mRecyclerView = rootView.findViewById(R.id.recycler_view);
@@ -201,8 +201,8 @@ public class ProductListFragment extends Fragment implements LoadMoreProductsInt
     }
 
     private void clearLoadingText() {
-        if(mLoadingTv == null) return;
-        mLoadingTv.setVisibility(View.GONE);
+        if(mLoadingSpinny == null) return;
+        mLoadingSpinny.setVisibility(View.GONE);
     }
 
 }
