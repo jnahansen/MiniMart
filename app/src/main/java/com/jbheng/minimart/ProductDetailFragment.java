@@ -25,7 +25,7 @@ public class ProductDetailFragment extends Fragment {
 
     public static final String TAG = ProductDetailFragment.class.getName();
 
-    private int mIndex;
+    private int mPosition;
 
     private ImageView prodIv;
     private TextView nameTv;
@@ -38,10 +38,10 @@ public class ProductDetailFragment extends Fragment {
     /**
      * @return A new instance of fragment.
      */
-    public static ProductDetailFragment newInstance(int index) {
+    public static ProductDetailFragment newInstance(int pos) {
         ProductDetailFragment fragment = new ProductDetailFragment();
         Bundle args = new Bundle();
-        args.putInt(Constants.INDEX, index);
+        args.putInt(Constants.POSITION, pos);
         fragment.setArguments(args);
         return fragment;
     }
@@ -56,11 +56,11 @@ public class ProductDetailFragment extends Fragment {
         Log.i(TAG, "onCreate");
 
         if (getArguments() != null) {
-            mIndex = getArguments().getInt(Constants.INDEX);
+            mPosition = getArguments().getInt(Constants.POSITION);
             // Set a preference for last detail item looked at
-            PreferenceManager.getDefaultSharedPreferences(App.getMyAppContext()).edit().putInt(Constants.LAST_PRODUCT_DETAIL_INDEX, mIndex);
+            PreferenceManager.getDefaultSharedPreferences(App.getMyAppContext()).edit().putInt(Constants.LAST_PRODUCT_DETAIL_INDEX, mPosition);
 
-            mProduct = Products.getInstance().getProducts().get(mIndex);
+            mProduct = Products.getInstance().getProducts().get(mPosition);
             if (mProduct == null) {
                 Log.e(TAG, "onCreate: product is null, leaving");
                 getActivity().finish();
@@ -148,11 +148,11 @@ public class ProductDetailFragment extends Fragment {
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
                 Log.e(TAG, "SWIPE R TO L");
-                // todo: goto next product
+                moveToProduct(mPosition+1);
                 return true; // Right to left
             } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
                 Log.e(TAG, "SWIPE L TO R");
-                // todo: goto previous product
+                moveToProduct(mPosition-1);
                 return true; // Left to right
             }
 
@@ -163,6 +163,21 @@ public class ProductDetailFragment extends Fragment {
                 return false; // Top to bottom
             }
             return false;
+        }
+    }
+
+    private void moveToProduct(int pos) {
+        try {
+            // Check position
+            if(pos < 0 || pos >= Products.getInstance().size()) {
+                Log.i(TAG,"moveToProduct: index out of range, leaving");
+                return;
+            }
+
+            ProductDetailActivity.startProductDetailActivity(pos);
+            getActivity().finish();
+        } catch (Exception e) {
+            Log.e(TAG,"moveToProduct: exception ",e);
         }
     }
 
