@@ -1,4 +1,4 @@
-package com.jbheng.minimart;
+package com.jbheng.minimart.loading;
 
 import com.jbheng.minimart.json.Product;
 

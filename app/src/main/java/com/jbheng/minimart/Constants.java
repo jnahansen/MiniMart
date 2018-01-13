@@ -15,7 +15,6 @@ public class Constants {
     public static final String INDEX = "INDEX";
     public static final String FETCH_MORE_PRODUCTS = "fetch_more_products";
     public static final String REQUESTED_POSITION = "initial_position";
-//    public static final String PRODUCT_DETAIL_SHOWING = "product_detail_showing";
 
     // Preferences
     public static final String LAST_PRODUCT_DETAIL_INDEX = "last_product_detail_index";

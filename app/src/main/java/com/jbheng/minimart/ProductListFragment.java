@@ -14,6 +14,8 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.jbheng.minimart.json.Product;
+import com.jbheng.minimart.loading.LoadMoreProductsInterface;
+import com.jbheng.minimart.loading.LoadMoreProductsTask;
 
 import java.util.Vector;
 

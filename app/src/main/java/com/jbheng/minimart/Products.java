@@ -19,7 +19,7 @@ import java.util.Vector;
 public class Products {
     private static final Products ourInstance = new Products();
 
-    static Products getInstance() {
+    public static Products getInstance() {
         return ourInstance;
     }
 

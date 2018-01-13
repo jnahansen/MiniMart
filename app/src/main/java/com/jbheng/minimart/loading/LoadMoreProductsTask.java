@@ -1,8 +1,10 @@
-package com.jbheng.minimart;
+package com.jbheng.minimart.loading;
 
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.jbheng.minimart.Constants;
+import com.jbheng.minimart.Products;
 import com.jbheng.minimart.json.Product;
 import com.jbheng.minimart.json.ProductsQuery;
 import com.jbheng.minimart.retrofit.ProductsInterface;
@@ -16,7 +18,7 @@ import retrofit2.Call;
  * Created by jhansen on 1/11/18.
  */
 
-class LoadMoreProductsTask extends AsyncTask<Void,Void,Object> {
+public class LoadMoreProductsTask extends AsyncTask<Void,Void,Object> {
 
     private static final String TAG = LoadMoreProductsTask.class.getName();
 
