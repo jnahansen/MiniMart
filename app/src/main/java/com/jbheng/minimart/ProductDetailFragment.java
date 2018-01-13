@@ -8,7 +8,9 @@ import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -56,10 +58,10 @@ public class ProductDetailFragment extends Fragment {
         if (getArguments() != null) {
             mIndex = getArguments().getInt(Constants.INDEX);
             // Set a preference for last detail item looked at
-            PreferenceManager.getDefaultSharedPreferences(App.getMyAppContext()).edit().putInt(Constants.LAST_PRODUCT_DETAIL_INDEX,mIndex);
+            PreferenceManager.getDefaultSharedPreferences(App.getMyAppContext()).edit().putInt(Constants.LAST_PRODUCT_DETAIL_INDEX, mIndex);
 
             mProduct = Products.getInstance().getProducts().get(mIndex);
-            if(mProduct == null) {
+            if (mProduct == null) {
                 Log.e(TAG, "onCreate: product is null, leaving");
                 getActivity().finish();
             }
@@ -78,6 +80,19 @@ public class ProductDetailFragment extends Fragment {
         rootView.setTag(TAG);
 
         try {
+
+            // Listen for swipe L/R gestures to move to next/previous product
+            final GestureDetector gdt = new GestureDetector(new GestureListener());
+            // Set listener on layout view
+            View layout = rootView.findViewById(R.id.detailScrollViewId);
+            layout.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(final View view, final MotionEvent event) {
+                    return gdt.onTouchEvent(event);
+                }
+            });
+
+
             prodIv = rootView.findViewById(R.id.productImageId);
             // Get product item image url and load using Picasso
             String imageUrl = mProduct.getProductImage();
@@ -90,15 +105,15 @@ public class ProductDetailFragment extends Fragment {
             priceTv.setText(mProduct.getPrice());
 
             shortDescrTv = rootView.findViewById(R.id.productShortDescrId);
-            if(!TextUtils.isEmpty(mProduct.getShortDescription()))
+            if (!TextUtils.isEmpty(mProduct.getShortDescription()))
                 shortDescrTv.setText(Html.fromHtml(mProduct.getShortDescription()));
 
             longDescrTv = rootView.findViewById(R.id.productLongDescrId);
-            if(!TextUtils.isEmpty(mProduct.getLongDescription()))
+            if (!TextUtils.isEmpty(mProduct.getLongDescription()))
                 longDescrTv.setText(Html.fromHtml(mProduct.getLongDescription()));
 
         } catch (Exception e) {
-            Log.e(TAG,"onCreateView: exception ",e);
+            Log.e(TAG, "onCreateView: exception ", e);
         }
 
         return rootView;
@@ -123,6 +138,32 @@ public class ProductDetailFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+    }
+
+    private static final int SWIPE_MIN_DISTANCE = 120;
+    private static final int SWIPE_THRESHOLD_VELOCITY = 200;
+
+    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+                Log.e(TAG, "SWIPE R TO L");
+                // todo: goto next product
+                return true; // Right to left
+            } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+                Log.e(TAG, "SWIPE L TO R");
+                // todo: goto previous product
+                return true; // Left to right
+            }
+
+            // below unused
+            if (e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
+                return false; // Bottom to top
+            } else if (e2.getY() - e1.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
+                return false; // Top to bottom
+            }
+            return false;
+        }
     }
 
 }
