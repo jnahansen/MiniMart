@@ -22,7 +22,7 @@ import java.util.Vector;
  */
 public class ProductListFragment extends Fragment implements LoadMoreProductsInterface {
 
-    private static final String TAG = ProductListFragment.class.getName();
+    public static final String TAG = ProductListFragment.class.getName();
 
     protected RecyclerView mRecyclerView;
     private RecyclerViewAdapter mAdapter;
@@ -31,14 +31,17 @@ public class ProductListFragment extends Fragment implements LoadMoreProductsInt
     // Scroll to end detection
     private EndlessRecyclerViewScrollListener mScrollHitBottomListener;
     private TextView mLoadingTv;
+    private int mRequestedPosition;
 
     /**
      * @return A new instance of fragment.
      */
-    public static ProductListFragment newInstance() {
+    public static ProductListFragment newInstance(boolean fetchMoreProducts,int position) {
         ProductListFragment fragment = new ProductListFragment();
-//        Bundle args = new Bundle();
-//        fragment.setArguments(args);
+        Bundle args = new Bundle();
+        args.putBoolean(Constants.FETCH_MORE_PRODUCTS,fetchMoreProducts);
+        args.putInt(Constants.REQUESTED_POSITION,position);
+        fragment.setArguments(args);
 
         // Don't create a new fragment when Activity is re-created e.g. during rotation
         fragment.setRetainInstance(true);
@@ -55,8 +58,14 @@ public class ProductListFragment extends Fragment implements LoadMoreProductsInt
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate");
 
-        // Get some products to show
-        getMoreProducts();
+        // Get more products to show
+        try {
+            boolean fetchMoreProducts = getArguments().getBoolean(Constants.FETCH_MORE_PRODUCTS);
+            if(fetchMoreProducts) getMoreProducts();
+            mRequestedPosition = getArguments().getInt(Constants.REQUESTED_POSITION);
+        } catch (Exception e) {
+            Log.e(TAG,"onCreate: exception during fetchMoreProducts call ",e);
+        }
     }
 
     @Override
@@ -79,10 +88,12 @@ public class ProductListFragment extends Fragment implements LoadMoreProductsInt
         // Specify a linear layout manager.
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
-//        mRecyclerView.scrollToPosition(0);        // todo: option - goto arg position
+
+        // Move list to requested initial position
+//        mRecyclerView.scrollToPosition(mRequestedPosition);       // This didn't work
 
         // Create adapter on Activity lifecycle and set into RecyclerView
-        mAdapter = new RecyclerViewAdapter(getContext());
+        mAdapter = new RecyclerViewAdapter(getFragmentManager());
         mRecyclerView.setAdapter(mAdapter);
 
         // For handling scroll to bottom loads more products

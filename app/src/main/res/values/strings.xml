@@ -2,5 +2,5 @@
     <string name="app_name">MiniMart</string>
     <string name="loading">Loading...</string>
     <string name="no_network">Check network connectivity!</string>
-
+    <string name="description">Description</string>
 </resources>

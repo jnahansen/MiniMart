@@ -1,7 +1,9 @@
 package com.jbheng.minimart;
 
-import android.content.Context;
 import android.os.Build;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
@@ -11,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.jbheng.minimart.json.Product;
 
@@ -23,10 +24,10 @@ import com.jbheng.minimart.json.Product;
 class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     // An Activity's Context.
-    private final Context mContext;
+    private final FragmentManager mFragmentManager;
 
-    public RecyclerViewAdapter(Context context) {
-        this.mContext = context;
+    public RecyclerViewAdapter(FragmentManager fm) {
+        this.mFragmentManager = fm;
     }
 
     /**
@@ -78,7 +79,7 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
         // Get product item image url and lazy load using Picasso
         String imageUrl = productItem.getProductImage();
-        Utils.setIconUsingPicasso(imageUrl,productItemHolder.productItemImage);
+        Utils.setIconUsingPicasso(imageUrl, productItemHolder.productItemImage);
 
         // Add the menu item details to the menu item view.
 //        productItemHolder.productItemImage.setImageResource(imageResID);       // todo: use Picasso here
@@ -86,7 +87,7 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         productItemHolder.productItemPrice.setText(productItem.getPrice());
 
         // Set html from short description if we have it
-        if(! TextUtils.isEmpty(productItem.getShortDescription())) {
+        if (!TextUtils.isEmpty(productItem.getShortDescription())) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)      // Nougat and above
                 productItemHolder.productItemShortDescription.setText(Html.fromHtml(productItem.getShortDescription(), Html.FROM_HTML_MODE_COMPACT));
             else
@@ -98,16 +99,20 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             @Override
             public void onClick(View v) {
                 try {
-                    Log.i("RVAdapter","Clicked on item");
-                    Toast.makeText(mContext, "Clicked on item " + productItem.getProductName(), Toast.LENGTH_SHORT).show();
-                    // todo: swap list for product detail fragment here
-//                    TextView tickerTv = (TextView) v.findViewById(R.id.stockId);
-//                    String ticker = tickerTv.getText().toString();
-//                    FragmentUtils.addFragment(mFragmentManager,
-//                            ContextMenuDialogFragment.newInstance(ticker,mBrokerName,Constants.DETAIL_DIALOG_TYPE_POSITION),
-//                            ContextMenuDialogFragment.TAG);
+                    Log.i("RVAdapter", "Clicked on item " + String.valueOf(productItem.getProductName()));
+                    // Hide List fragment here
+                    Fragment listFragment = mFragmentManager.findFragmentByTag(ProductListFragment.TAG);
+                    mFragmentManager.beginTransaction()
+                            .hide(listFragment)
+                            .commit();
+
+                    // Add product detail fragment here, on BACK stack so we can go back to list fragment using BACK
+                    FragmentTransaction trans = mFragmentManager.beginTransaction();
+                    trans.add(R.id.sample_content_fragment, ProductDetailFragment.newInstance(position));
+                    trans.addToBackStack(ProductDetailFragment.TAG).commit();
+
                 } catch (Exception e) {
-                    Log.e("RVAdapter","onClick: exception: ",e);
+                    Log.e("RVAdapter", "onClick: exception: ", e);
                 }
             }
         });

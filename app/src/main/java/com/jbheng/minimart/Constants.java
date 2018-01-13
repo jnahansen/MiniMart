@@ -12,5 +12,11 @@ public class Constants {
     public static final int PAGESIZE = 10;      // Constant pagesize for loading products from API
     public static final String HTTP = "http";
     public static final int INVALID = -1;
+    public static final String INDEX = "INDEX";
+    public static final String FETCH_MORE_PRODUCTS = "fetch_more_products";
+    public static final String REQUESTED_POSITION = "initial_position";
+
+    // Preferences
+    public static final String LAST_PRODUCT_DETAIL_INDEX = "last_product_detail_index";
 
 }

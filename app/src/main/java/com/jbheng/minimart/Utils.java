@@ -38,7 +38,7 @@ public class Utils {
     }
 
     public static boolean hasNetwork(Context c) {
-        if(! Utils.isNetworkConnected(c)) {
+        if (!Utils.isNetworkConnected(c)) {
             Toast.makeText(c, c.getString(R.string.no_network), Toast.LENGTH_LONG).show();
             return false;
         }
@@ -49,11 +49,10 @@ public class Utils {
     // For Picasso image rendering
     public static void setIconUsingPicasso(String iconUrl, ImageView iv) {
         int defaultDrawableId = R.drawable.null_icon;
-        try {
-            if (TextUtils.isEmpty(iconUrl))
-                Log.w(TAG, "setIconUsingPicasso: iconUrl is null or empty, using default");
-        } catch (Throwable t) {
-            Log.e(TAG, "setIconUsingPicasso: exception: ", t);
+        if (TextUtils.isEmpty(iconUrl))
+            Log.e(TAG, "setIconUsingPicasso: iconUrl is null or empty, using default");
+        if (iv == null) {
+            Log.e(TAG, "setIconUsingPicasso: imageView is null or empty, leaving");
             return;
         }
         try {
