@@ -1,5 +1,6 @@
 package com.jbheng.minimart;
 
+import android.content.Intent;
 import android.os.Build;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
@@ -99,7 +100,11 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             @Override
             public void onClick(View v) {
                 Log.i("RVAdapter", "Clicked on item " + String.valueOf(productItem.getProductName()));
-                ProductDetailFragment.show(mFragmentManager,position);
+                // show the product
+                Intent i = new Intent();
+                i.putExtra(Constants.REQUESTED_POSITION,position);
+                i.setClass(App.getMyAppContext(),ProductDetailActivity.class);
+                App.getMyAppContext().startActivity(i);
             }
         });
     }

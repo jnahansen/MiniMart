@@ -5,8 +5,6 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
@@ -125,26 +123,6 @@ public class ProductDetailFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-    }
-
-    // todo: change to use ProductDetailActivity
-    public static void show(FragmentManager fm, int position) {
-        Log.i(TAG,"showProductDetail: position: " + String.valueOf(position));
-        try {
-            // Hide List fragment here
-            Fragment listFragment = fm.findFragmentByTag(ProductListFragment.TAG);
-            fm.beginTransaction()
-                    .hide(listFragment)
-                    .commit();
-
-            // Add product detail fragment here, on BACK stack so we can go back to list fragment using BACK
-            FragmentTransaction trans = fm.beginTransaction();
-            trans.add(R.id.sample_content_fragment, ProductDetailFragment.newInstance(position),ProductDetailFragment.TAG);
-            trans.addToBackStack(ProductDetailFragment.TAG).commit();
-
-        } catch (Exception e) {
-            Log.e("showProductDetail", "onClick: exception: ", e);
-        }
     }
 
 }

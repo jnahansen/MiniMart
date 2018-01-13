@@ -3,6 +3,8 @@ package com.jbheng.minimart;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.ImageView;
@@ -90,5 +92,9 @@ public class Utils {
         }
     }
 
+    public static boolean isFragmentVisible(FragmentManager fm,String tag) {
+        Fragment frag = fm.findFragmentByTag(tag);
+        return frag != null && frag.isVisible();
+    }
 
 }
