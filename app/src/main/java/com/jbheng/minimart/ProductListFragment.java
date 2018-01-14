@@ -106,7 +106,6 @@ public class ProductListFragment extends Fragment implements LoadMoreProductsInt
                 Log.i(TAG,"onLoadMore: page: " + String.valueOf(page) + " totalItemsCount: " + String.valueOf(totalItemsCount));
                 // Triggered only when new data needs to be appended to the list
                 // Add whatever code is needed to append new items to the bottom of the list
-//                loadNextDataFromApi(page);
                 getMoreProducts();
             }
         };

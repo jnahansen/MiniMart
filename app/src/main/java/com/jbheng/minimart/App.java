@@ -21,7 +21,7 @@ import android.content.Context;
         mContext = getApplicationContext();
     }
 
-    // Use App context when needed.
+    // Sometimes App context is convenient to use.
     public static Context getMyAppContext() {
         return mContext;
     }

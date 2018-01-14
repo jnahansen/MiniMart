@@ -174,7 +174,7 @@ public class ProductDetailFragment extends Fragment {
 
     private void moveToProduct(int pos,boolean forward) {
         try {
-            // Check position
+            // Valid position?
             if(pos < 0 || pos >= Products.getInstance().size()) {
                 Log.i(TAG,"moveToProduct: index out of range, leaving");
                 return;
@@ -183,7 +183,7 @@ public class ProductDetailFragment extends Fragment {
             ProductDetailActivity.startProductDetailActivity(getContext(),pos);
             // Finish previous product activity
             getActivity().finish();
-            // Animate new product onto screen
+            // Animate new product screen
             if(forward)
                 getActivity().overridePendingTransition(R.anim.to_left,R.anim.nothing);
             else

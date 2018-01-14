@@ -36,7 +36,6 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     public class ItemViewHolder extends RecyclerView.ViewHolder {
         private TextView productItemName;
         private TextView productItemShortDescription;
-        // todo: add long description
         private TextView productItemPrice;
         private ImageView productItemImage;
 

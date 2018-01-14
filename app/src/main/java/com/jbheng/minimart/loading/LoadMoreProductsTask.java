@@ -31,7 +31,7 @@ public class LoadMoreProductsTask extends AsyncTask<Void,Void,Object> {
     @Override
     protected Object doInBackground(Void... unused) {
         Log.i(TAG, "doInBackground");
-        // Get more products in background
+        // Get more products in background; use Vector (accessed from main and worker threads)
         Vector<Product> products = getMoreProductsUsingRetrofit();
         return products;
     }
@@ -79,7 +79,6 @@ public class LoadMoreProductsTask extends AsyncTask<Void,Void,Object> {
         try {
             ProductsQuery pq = query.execute().body();
             // Add new products to singleton list
-            //Products.getInstance().append(pq.getProducts());
             return pq.getProducts();
         } catch (Throwable t) {
             Log.e(TAG,"getMoreProductsUsingRetrofit: exception: ",t);
