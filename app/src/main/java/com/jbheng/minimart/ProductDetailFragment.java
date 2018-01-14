@@ -2,6 +2,7 @@
 package com.jbheng.minimart;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -55,21 +56,26 @@ public class ProductDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate");
 
-        if (getArguments() != null) {
-            mPosition = getArguments().getInt(Constants.POSITION);
-            // Set a preference for last detail item looked at
-            PreferenceManager.getDefaultSharedPreferences(App.getMyAppContext()).edit().putInt(Constants.LAST_PRODUCT_DETAIL_INDEX, mPosition);
-
-            mProduct = Products.getInstance().getProducts().get(mPosition);
-            if (mProduct == null) {
-                Log.e(TAG, "onCreate: product is null, leaving");
-                getActivity().finish();
-            }
-        } else {
-            Log.e(TAG, "onCreate: arguments invalid; missing index for product, leaving");
+        // Restart app if no product data here
+        if(! Products.getInstance().haveProducts()) {
+            startActivity(new Intent(getContext(),MainActivity.class));
             getActivity().finish();
+            return;
         }
 
+        // Get product position
+        if (getArguments() != null) {
+            mPosition = getArguments().getInt(Constants.POSITION);
+            if (Products.getInstance().isValidPosition(mPosition)) {
+                // Set a preference for last detail product position looked at
+                PreferenceManager.getDefaultSharedPreferences(App.getMyAppContext()).edit().putInt(Constants.LAST_PRODUCT_DETAIL_INDEX, mPosition);
+                mProduct = Products.getInstance().getProducts().get(mPosition);
+                return;
+            }
+        }
+
+        Log.e(TAG, "onCreate: unexpected problem, mPosition: " + String.valueOf(mPosition) + ", leaving");
+        getActivity().finish();
     }
 
     @Override

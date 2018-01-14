@@ -44,6 +44,10 @@ public class Products {
         return 0;
     }
 
+    public boolean isValidPosition(int position) {
+        return position >= 0 && position < size();
+    }
+
     public void append(Vector<Product> newProducts) {
         Log.i(TAG,"append");
         products.addAll(newProducts);
