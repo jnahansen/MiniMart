@@ -180,7 +180,7 @@ public class ProductDetailFragment extends Fragment {
                 return;
             }
             // Start new activity
-            ProductDetailActivity.startProductDetailActivity(pos);
+            ProductDetailActivity.startProductDetailActivity(getContext(),pos);
             // Finish previous product activity
             getActivity().finish();
             // Animate new product onto screen

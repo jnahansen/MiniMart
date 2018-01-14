@@ -1,7 +1,7 @@
 package com.jbheng.minimart;
 
+import android.content.Context;
 import android.os.Build;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextUtils;
@@ -23,11 +23,10 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     public static final String TAG = RecyclerViewAdapter.class.getName();
 
-    // An Activity's Context.
-    private final FragmentManager mFragmentManager;
+    private Context mContext;
 
-    public RecyclerViewAdapter(FragmentManager fm) {
-        this.mFragmentManager = fm;
+    public RecyclerViewAdapter(Context context) {
+        this.mContext = context;
     }
 
     /**
@@ -99,7 +98,7 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             @Override
             public void onClick(View v) {
                 Log.i("RVAdapter", "Clicked on item " + String.valueOf(productItem.getProductName()));
-                ProductDetailActivity.startProductDetailActivity(position);
+                ProductDetailActivity.startProductDetailActivity(mContext,position);
             }
         });
     }

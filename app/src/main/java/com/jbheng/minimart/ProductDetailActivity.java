@@ -1,5 +1,6 @@
 package com.jbheng.minimart;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -34,13 +35,13 @@ public class ProductDetailActivity extends AppCompatActivity {
         transaction.commit();
     }
 
-    public static void startProductDetailActivity(int position) {
+    public static void startProductDetailActivity(Context context, int position) {
         Log.i(TAG,"startProductDetailActivity");
         // show the product
         Intent i = new Intent();
         i.putExtra(Constants.REQUESTED_POSITION,position);
         i.setClass(App.getMyAppContext(),ProductDetailActivity.class);
-        App.getMyAppContext().startActivity(i);
+        context.startActivity(i);
     }
 
 }
