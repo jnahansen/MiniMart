@@ -12,4 +12,8 @@ public interface LoadMoreProductsInterface {
 
     public void OnLoadProductsFinished(Vector<Product> list);
 
+    public void OnStartLoading();
+
+    public void OnStopLoading();
+
 }

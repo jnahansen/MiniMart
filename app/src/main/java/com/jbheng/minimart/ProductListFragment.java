@@ -33,7 +33,8 @@ public class ProductListFragment extends Fragment implements LoadMoreProductsInt
     private LoadMoreProductsTask mLoadProductsTask;
     // Scroll to end detection
     private EndlessRecyclerViewScrollListener mScrollHitBottomListener;
-    private ProgressBar mLoadingSpinny;
+    private ProgressBar mStartupLoadingSpinny;
+    private ProgressBar mIncrementalLoadingSpinny;
     private int mRequestedPosition;
 
     /**
@@ -78,9 +79,12 @@ public class ProductListFragment extends Fragment implements LoadMoreProductsInt
         View rootView = inflater.inflate(R.layout.product_list_layout, container, false);
         rootView.setTag(TAG);
 
-        mLoadingSpinny = (ProgressBar) rootView.findViewById(R.id.loadingSpinnyId);
+        // Spinnys for startup and incremental Loading
+        mStartupLoadingSpinny = (ProgressBar) rootView.findViewById(R.id.startupLoadingSpinnyId);
+        mIncrementalLoadingSpinny = (ProgressBar) rootView.findViewById(R.id.incrementalLoaderSpinnyId);
+
         // If we have any products, clear loading spinny upfront
-        if(Products.getInstance().haveProducts()) clearLoadingText();
+        if(Products.getInstance().haveProducts()) clearStartupLoadingSpinny();
 
         mRecyclerView = rootView.findViewById(R.id.recycler_view);
 
@@ -187,7 +191,7 @@ public class ProductListFragment extends Fragment implements LoadMoreProductsInt
         Log.i(TAG, "OnLoadProductsFinished");
 
         // Clear initial loading text after first load pass
-        clearLoadingText();
+        clearStartupLoadingSpinny();
 
         // For empty list null our task and return
         if(list == null || list.isEmpty()) {
@@ -211,9 +215,29 @@ public class ProductListFragment extends Fragment implements LoadMoreProductsInt
         if(mScrollHitBottomListener != null) mScrollHitBottomListener.resetState();
     }
 
-    private void clearLoadingText() {
-        if(mLoadingSpinny == null) return;
-        mLoadingSpinny.setVisibility(View.GONE);
+    // Enable loading spinny
+    @Override
+    public void OnStartLoading() {
+        showIncrementalProgressBar();       // todo: use interface instead
+    }
+
+    // Disable loading spinny
+    @Override
+    public void OnStopLoading() {
+        hideIncrementalProgressBar();       // todo: use intf instead
+    }
+
+    private void clearStartupLoadingSpinny() {
+        if(mStartupLoadingSpinny == null) return;
+        mStartupLoadingSpinny.setVisibility(View.GONE);
+    }
+
+    public void showIncrementalProgressBar() {
+        if(mIncrementalLoadingSpinny != null) mIncrementalLoadingSpinny.setVisibility(View.VISIBLE);
+    }
+
+    public void hideIncrementalProgressBar() {
+        if(mIncrementalLoadingSpinny != null) mIncrementalLoadingSpinny.setVisibility(View.GONE);
     }
 
 }

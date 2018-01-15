@@ -25,7 +25,13 @@ public class LoadMoreProductsTask extends AsyncTask<Void,Void,Object> {
     private LoadMoreProductsInterface mLoadProductsListener;
 
     public LoadMoreProductsTask(LoadMoreProductsInterface listener) {
+        if(listener == null) Log.e(TAG,"listener is null");
         this.mLoadProductsListener = listener;
+    }
+
+    @Override
+    protected void onPreExecute() {
+        if(mLoadProductsListener != null) mLoadProductsListener.OnStartLoading();
     }
 
     @Override
@@ -40,6 +46,7 @@ public class LoadMoreProductsTask extends AsyncTask<Void,Void,Object> {
     protected void onPostExecute(Object obj) {
         Log.i(TAG, "onPostExecute");
         handleResult(obj);
+        if(mLoadProductsListener != null) mLoadProductsListener.OnStopLoading();
     }
 
     @Override
