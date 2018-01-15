@@ -28,16 +28,16 @@ How to Build
 This app uses the Gradle build system. To build the project, use the
 "gradlew build" command.
 
-Implementation Notes
+Implementation Notes (ALL REQUIREMENTS DONE EXCEPT PHONE/TABLET SUPPORT)
 --------------------
-        - MainActivThis sample demonstrates ...ity starts a ProductListFragment containing a RecyclerView.
+        - MainActivity starts a ProductListFragment containing a RecyclerView.
+        - Using Retrofit for network access and GSON for json conversion
         - ProductListFragment calls an AsyncTask when user scroll touches bottom of list.
           Only one fetch task is allowed to run at a time. AsyncTask calls Retrofit to get
-          more Products from the API. Product instances are stored in Products class.
-        - Using Retrofit for network access and GSON for json conversion
-        - Products (singleton) class is like a "Model" that contains a list of Product instances fetched from API
-          The Model is separate from Activity/Fragment lifecycle and even adapter so that the product data persists
-          separate from GUI/orientation changes.
+          more Products from the API. Product instances are stored in a Products class.
+        - Products (singleton) class is like a "Model" that contains a list of Product instances fetched from API.
+          The Products model is separate from Activity/Fragment lifecycle and adapter so that the product data persists
+          independent of GUI/orientation/Activity changes.
         - Using Picasso for loading/cache-ing images.
         - Product detail is displayed using a ProductDetailFragment started from a ProductDetailActivity
           The list and detail fragments will make it easier to support side-by-side tablet layouts  (tbd).
