@@ -3,6 +3,7 @@ package com.jbheng.minimart;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -91,9 +92,6 @@ public class ProductListFragment extends Fragment implements LoadMoreProductsInt
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        // Move list to requested initial position
-//        mRecyclerView.scrollToPosition(mRequestedPosition);       // This didn't work
-
         // Create adapter on Activity lifecycle and set into RecyclerView
         mAdapter = new RecyclerViewAdapter(getContext());
         mRecyclerView.setAdapter(mAdapter);
@@ -118,6 +116,18 @@ public class ProductListFragment extends Fragment implements LoadMoreProductsInt
     @Override
     public void onStart() {
         super.onStart();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Scroll list to position of last selected detail item
+        int pos = PreferenceManager.getDefaultSharedPreferences(App.getMyAppContext()).getInt(Constants.LAST_PRODUCT_DETAIL_INDEX, 0);
+        if(mRecyclerView != null && Products.getInstance().isValidPosition(pos)) {
+            Log.i(TAG,"onResume: SCROLLING TO POS: " + String.valueOf(pos));
+            mRecyclerView.scrollToPosition(pos);
+        }
     }
 
     @Override

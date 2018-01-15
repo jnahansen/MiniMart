@@ -68,7 +68,7 @@ public class ProductDetailFragment extends Fragment {
             mPosition = getArguments().getInt(Constants.POSITION);
             if (Products.getInstance().isValidPosition(mPosition)) {
                 // Set a preference for last detail product position looked at
-                PreferenceManager.getDefaultSharedPreferences(App.getMyAppContext()).edit().putInt(Constants.LAST_PRODUCT_DETAIL_INDEX, mPosition);
+                PreferenceManager.getDefaultSharedPreferences(App.getMyAppContext()).edit().putInt(Constants.LAST_PRODUCT_DETAIL_INDEX, mPosition).commit();
                 mProduct = Products.getInstance().getProducts().get(mPosition);
                 return;
             }

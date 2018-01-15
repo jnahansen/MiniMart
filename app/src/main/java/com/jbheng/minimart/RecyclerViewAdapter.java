@@ -79,8 +79,6 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         String imageUrl = productItem.getProductImage();
         Utils.setIconUsingPicasso(imageUrl, productItemHolder.productItemImage);
 
-        // Add the menu item details to the menu item view.
-//        productItemHolder.productItemImage.setImageResource(imageResID);       // todo: use Picasso here
         productItemHolder.productItemName.setText(productItem.getProductName());
         productItemHolder.productItemPrice.setText(productItem.getPrice());
 
